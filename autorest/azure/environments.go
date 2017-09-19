@@ -1,7 +1,10 @@
 package azure
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"path"
 	"strings"
 )
 
@@ -10,6 +13,7 @@ var environments = map[string]Environment{
 	"AZUREGERMANCLOUD":       GermanCloud,
 	"AZUREPUBLICCLOUD":       PublicCloud,
 	"AZUREUSGOVERNMENTCLOUD": USGovernmentCloud,
+	"AZURESTACKCLOUD":        AzureStackCloud,
 }
 
 // Environment represents a set of endpoints for each of Azure's Clouds.
@@ -117,6 +121,11 @@ var (
 		ResourceManagerVMDNSSuffix:   "cloudapp.microsoftazure.de",
 		ContainerRegistryDNSSuffix:   "azurecr.io",
 	}
+
+	//AzurestackCloud is the Azure enviornment running in customer datacenter
+	AzurestackCloud = Environment{
+		Name: "AzureStackCloud",
+	}
 )
 
 // EnvironmentFromName returns an Environment based on the common name specified
@@ -125,6 +134,21 @@ func EnvironmentFromName(name string) (Environment, error) {
 	env, ok := environments[name]
 	if !ok {
 		return env, fmt.Errorf("autorest/azure: There is no cloud environment matching the name %q", name)
+	}
+
+	if strings.EqualFold(name, "AZURESTACKCLOUD") == true {
+
+		println("Reading Azure stack config from Directory", path.Join("etc", "kubernetes", "azurestackcloud.json"))
+
+		fbytes, err := ioutil.ReadFile(path.Join("/etc", "kubernetes", "azurestackcloud.json"))
+		if err != nil {
+			return env, fmt.Errorf("Error opening Azure Stack Cloud Config file - azurestackcloud.json %q", err.Error())
+		}
+
+		err = json.Unmarshal(fbytes, &env)
+		if err != nil {
+			return env, fmt.Errorf("error parsing for Azure Stack Cloud Config %q", err.Error())
+		}
 	}
 	return env, nil
 }

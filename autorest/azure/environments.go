@@ -13,7 +13,7 @@ var environments = map[string]Environment{
 	"AZUREGERMANCLOUD":       GermanCloud,
 	"AZUREPUBLICCLOUD":       PublicCloud,
 	"AZUREUSGOVERNMENTCLOUD": USGovernmentCloud,
-	"AZURESTACKCLOUD":        AzureStackCloud,
+	"AZURESTACKCLOUD":        AzurestackCloud,
 }
 
 // Environment represents a set of endpoints for each of Azure's Clouds.
@@ -124,7 +124,7 @@ var (
 
 	//AzurestackCloud is the Azure enviornment running in customer datacenter
 	AzurestackCloud = Environment{
-		Name: "AzureStackCloud",
+		Name: "AzurestackCloud",
 	}
 )
 
